@@ -1,0 +1,15 @@
+from typing import Optional
+
+import discord
+from discord import app_commands
+
+from .base import cmd_shazam
+
+@app_commands.command(
+    name="link",
+    description="Try to find a song from the link."
+)
+@app_commands.rename(input_media="input")
+@app_commands.describe(input_media="where to find the video/audio from.", timestamp="which timestamp to search from.")
+async def cmd_shazam_link(interaction: discord.Interaction, input_media: str, timestamp: Optional[int] = None):
+    return await cmd_shazam(interaction, input_media, timestamp)
