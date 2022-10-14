@@ -3,11 +3,12 @@ services:
   bot:
     build: .
     environment:
-      - DISCORD_TOKEN
-      - DISCORD_GUILD_LIST
+      - BOT_TOKEN
+      - CMD_MODE
+      - CMD_SYNC_GUILDS
       - REDIS_HOST=redis://cache:6379
     depends_on:
-      - redis
+      - cache
     restart: unless-stopped
   cache:
     image: redis:latest
