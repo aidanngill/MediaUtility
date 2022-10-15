@@ -18,8 +18,3 @@ def timestamp_to_seconds(timestamp: str) -> int:
         total_seconds += int(item) * second_multiplier[index]
     
     return total_seconds
-
-if __name__ == "__main__":
-    print(timestamp_to_seconds("3:45") == 225)
-    print(timestamp_to_seconds("01:34:21") == 5661)
-    print(timestamp_to_seconds("10") == 10)

@@ -96,3 +96,14 @@ Finally, to run the bot you may run `python3 -m src`.
 
 If you'd like to run this bot in a Docker environment you may refer to the
 example [docker-compose.yml](./docker-compose.yml) file.
+
+## Tests
+
+If you'd like to run the tests you may type the following command.
+
+```bash
+python3 -m unittest
+```
+
+Again you will need Python 3.8 or above to run these tests as some are
+asynchronous.

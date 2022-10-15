@@ -19,6 +19,21 @@ from .utility import timestamp_to_seconds
 
 _shazam = Shazam()
 
+def timestamp_from_extractor(link: str, extractor_key: str) -> Optional[int]:
+    """ Try to resolve the timestamp from a link and its extractor. """
+    url_parsed = parse.urlparse(link)
+
+    # For Youtube links the timestamp will be stored in the `?t=` query parameter.
+    if extractor_key == "youtube":
+        url_query_ts = parse.parse_qs(url_parsed.query).get("t")
+
+        if url_query_ts is not None:
+            return int(url_query_ts[0])
+    
+    # For Soundcloud links they have a URL fragment, e.g., `t=1%3A32` = `t=1:32`.
+    elif extractor_key == "soundcloud":
+        return timestamp_to_seconds(parse.unquote(url_parsed.fragment.split("=")[-1]))
+
 async def download_file(link: str, path: str) -> None:
     """ Downloads a file from a URL to the given path. """
     async with aiohttp.ClientSession() as session:
@@ -51,7 +66,8 @@ async def download_media(
 
 async def find_song(
     link: str,
-    timestamp: Optional[int] = None
+    timestamp: Optional[int] = None,
+    use_cache: bool = True,
 ) -> Optional[song.Song]:
     """ Try to find a song given a URL and timestamp. """
     if not validators.url(link): # type: ignore
@@ -64,32 +80,24 @@ async def find_song(
         data_media = await download_media(link, download=False)
 
         # Some extractors have a `&t=` query parameter to denote the timestamp.
-        # Prioritise it over the given timestamp, which is usually `None` anyway.
+        # If we're not provided an explicit timestamp, try to get it from here
+        # instead.
         if data_media and timestamp is None:
-            url_parsed = parse.urlparse(link)
-
-            if data_media["extractor"] == "youtube":
-                url_query_ts = parse.parse_qs(url_parsed.query).get("t")
-
-                if url_query_ts is not None:
-                    timestamp = int(url_query_ts[0])
-            
-            # For Soundcloud links they have a URL fragment, e.g., `t=1%3A32` = `t=1:32`.
-            elif data_media["extractor"] == "soundcloud":
-                timestamp = timestamp_to_seconds(url_parsed.fragment.split("=")[-1].replace("%3A", ":"))
+            timestamp = timestamp_from_extractor(link, data_media["extractor"])
 
         # Fallback value if we don't find anything from the extractor.
         if timestamp is None:
             timestamp = 0
 
         # Check for existing cache in Redis.
-        maybe_song = await cache.get_from_info(data_media, timestamp)
+        if use_cache:
+            maybe_song = await cache.get_from_info(data_media, timestamp)
 
-        if maybe_song is not None:
-            if len(maybe_song.keys()) == 0:
-                return
+            if maybe_song is not None:
+                if len(maybe_song.keys()) == 0:
+                    return
 
-            return maybe_song
+                return maybe_song
 
         file_path_audio = os.path.join(path_temp, "audio.ogg")
 
@@ -103,14 +111,13 @@ async def find_song(
 
         data_shazam = await _shazam.recognize_song(file_path_audio)
 
-        if len(data_shazam["matches"]) == 0:
+        if use_cache and len(data_shazam["matches"]) == 0:
             await cache.set_empty_from_info(data_media, timestamp)
-
             return
         
         data_song = song.create(data_shazam)
 
-        if data_media is not None:
+        if use_cache and data_media is not None:
             await cache.set_from_info(data_media, data_shazam, timestamp)
         
         return data_song

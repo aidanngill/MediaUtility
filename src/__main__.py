@@ -1,11 +1,12 @@
 import logging
 import logging.handlers
 import os
-from datetime import datetime
 
 from .bot import bot
 
-logging.getLogger().setLevel(logging.DEBUG)
+logger = logging.getLogger()
+
+logger.setLevel(logging.DEBUG)
 
 stream_formatter = logging.Formatter(
     "[%(asctime)s] [%(name)s] %(levelname)s: %(message)s",
@@ -31,8 +32,8 @@ file_handler = logging.handlers.TimedRotatingFileHandler(
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(file_formatter)
 
-logging.getLogger().addHandler(stream_handler)
-logging.getLogger().addHandler(file_handler)
+logger.addHandler(stream_handler)
+logger.addHandler(file_handler)
 
 token = os.getenv("BOT_TOKEN")
 assert token != None
