@@ -9,6 +9,8 @@ services:
       - REDIS_HOST=redis://cache:6379
     depends_on:
       - cache
+    volumes:
+      - ./logs:/app/logs
     restart: unless-stopped
   cache:
     image: redis:latest

@@ -1,4 +1,3 @@
-import logging
 from typing import Optional
 
 import discord
@@ -7,7 +6,6 @@ from discord import app_commands
 from .. import shazam
 from ..exceptions import InvalidLinkException
 
-log = logging.getLogger(__name__)
 
 @app_commands.command(
     name="extract",
@@ -16,8 +14,6 @@ log = logging.getLogger(__name__)
 @app_commands.rename(input_media="input")
 @app_commands.describe(input_media="where to find the video/audio from.")
 async def extract(interaction: discord.Interaction, input_media: str):
-    log.info(f"{interaction.user} requests an extraction of {input_media}")
-
     await interaction.response.defer(thinking=True)
 
     try:

@@ -1,4 +1,3 @@
-import logging
 from typing import Optional
 
 import discord
@@ -6,11 +5,8 @@ import discord
 from ... import shazam
 from ...exceptions import InvalidLinkException
 
-log = logging.getLogger(__name__)
 
 async def cmd_shazam(interaction: discord.Interaction, input_link: str, timestamp: Optional[int] = None):
-    log.info(f"{interaction.user} requests an identification for {input_link}")
-
     await interaction.response.defer(thinking=True)
 
     try:
