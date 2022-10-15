@@ -1,17 +1,17 @@
 import logging
 import os
 
-logging.basicConfig(
-    format="[%(asctime)s] [%(name)s] %(levelname)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level=logging.INFO,
-)
-
 import discord
 from discord import app_commands
 
 from .commands.extract import extract
 from .commands.shazam import shazam_group
+
+logging.basicConfig(
+    format="[%(asctime)s] [%(name)s] %(levelname)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=logging.INFO,
+)
 
 log = logging.getLogger(__name__)
 

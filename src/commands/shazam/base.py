@@ -10,6 +10,7 @@ async def cmd_shazam(interaction: discord.Interaction, input_link: str, timestam
     await interaction.response.defer(thinking=True)
 
     try:
+        # TODO: Implement retrieving from cache.
         song = await shazam.find_song(input_link, timestamp)
     except InvalidLinkException:
         return await interaction.edit_original_response(content="Please provide a valid link.")

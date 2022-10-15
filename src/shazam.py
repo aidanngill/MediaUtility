@@ -15,8 +15,9 @@ from yt_dlp import YoutubeDL
 from . import cache
 from .api import song
 from .exceptions import InvalidLinkException
+from .utility import timestamp_to_seconds
 
-shazam = Shazam()
+_shazam = Shazam()
 
 async def download_file(link: str, path: str) -> None:
     """ Downloads a file from a URL to the given path. """
@@ -58,37 +59,35 @@ async def find_song(
 
     with TemporaryDirectory() as path_temp:
         # Download the file to the temporary path.
-        data_media = await download_media(
-            link, os.path.join(path_temp, "%(id)s.%(ext)s")
-        )
+        data_media = await download_media(link, download=False)
 
         # Some extractors have a `&t=` query parameter to denote the timestamp.
         # Prioritise it over the given timestamp, which is usually `None` anyway.
-        # TODO: Other services like Soundcloud or whatever.
-        if data_media and data_media["extractor"] == "youtube" and timestamp is None:
-            query_ts = parse.parse_qs(parse.urlparse(link).query).get("t")
+        if data_media and timestamp is None:
+            url_parsed = parse.urlparse(link)
 
-            if query_ts is not None:
-                timestamp = int(query_ts[0])
+            if data_media["extractor"] == "youtube":
+                url_query_ts = parse.parse_qs(url_parsed.query).get("t")
 
+                if url_query_ts is not None:
+                    timestamp = int(url_query_ts[0])
+            
+            # For Soundcloud links they have a URL fragment, e.g., `t=1%3A32` = `t=1:32`.
+            elif data_media["extractor"] == "soundcloud":
+                timestamp = timestamp_to_seconds(url_parsed.fragment.split("=")[-1].replace("%3A", ":"))
+
+        # Fallback value if we don't find anything from the extractor.
         if timestamp is None:
             timestamp = 0
 
-        # If it is not from a place YoutubeDL supports, manually download it
-        # by ourselves. We use the MIME type to guess which extension the file is.
-        if not data_media:
-            await download_file(link, os.path.join(path_temp, "input-audio.%(ext)s"))
-
-        file_path = os.path.join(path_temp, os.listdir(path_temp)[0])
         file_path_audio = os.path.join(path_temp, "audio.ogg")
 
         ffmpeg \
-            .input(file_path) \
-            .filter_("atrim", start=timestamp, end=timestamp + 15) \
+            .input(data_media["url"] if data_media else link, ss=(str(timestamp)), t=15) \
             .output(file_path_audio, vn=None) \
             .run(quiet=True)
-        
-        data_shazam = await shazam.recognize_song(file_path_audio)
+
+        data_shazam = await _shazam.recognize_song(file_path_audio)
 
         if len(data_shazam["matches"]) == 0:
             return
