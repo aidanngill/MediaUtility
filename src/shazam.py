@@ -56,6 +56,8 @@ async def find_song(
     """ Try to find a song given a URL and timestamp. """
     if not validators.url(link): # type: ignore
         raise InvalidLinkException
+    
+    loop = asyncio.get_event_loop()
 
     with TemporaryDirectory() as path_temp:
         # Download the file to the temporary path.
@@ -82,10 +84,13 @@ async def find_song(
 
         file_path_audio = os.path.join(path_temp, "audio.ogg")
 
-        ffmpeg \
-            .input(data_media["url"] if data_media else link, ss=(str(timestamp)), t=15) \
-            .output(file_path_audio, vn=None) \
-            .run(quiet=True)
+        def _download_media():
+            ffmpeg \
+                .input(data_media["url"] if data_media else link, ss=(str(timestamp)), t=15) \
+                .output(file_path_audio, vn=None) \
+                .run(quiet=True)
+        
+        await loop.run_in_executor(None, lambda: _download_media())
 
         data_shazam = await _shazam.recognize_song(file_path_audio)
 
