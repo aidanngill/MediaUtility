@@ -82,6 +82,15 @@ async def find_song(
         if timestamp is None:
             timestamp = 0
 
+        # Check for existing cache in Redis.
+        maybe_song = await cache.get_from_info(data_media, timestamp)
+
+        if maybe_song is not None:
+            if len(maybe_song.keys()) == 0:
+                return
+
+            return maybe_song
+
         file_path_audio = os.path.join(path_temp, "audio.ogg")
 
         def _download_media():
@@ -95,6 +104,8 @@ async def find_song(
         data_shazam = await _shazam.recognize_song(file_path_audio)
 
         if len(data_shazam["matches"]) == 0:
+            await cache.set_empty_from_info(data_media, timestamp)
+
             return
         
         data_song = song.create(data_shazam)

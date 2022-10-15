@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 import discord
@@ -5,12 +6,14 @@ import discord
 from ... import shazam
 from ...exceptions import InvalidLinkException
 
+log = logging.getLogger(__name__)
 
 async def cmd_shazam(interaction: discord.Interaction, input_link: str, timestamp: Optional[int] = None):
+    log.info(f"{interaction.user} requests an identification for {input_link}")
+
     await interaction.response.defer(thinking=True)
 
     try:
-        # TODO: Implement retrieving from cache.
         song = await shazam.find_song(input_link, timestamp)
     except InvalidLinkException:
         return await interaction.edit_original_response(content="Please provide a valid link.")
