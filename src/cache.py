@@ -46,7 +46,7 @@ class Cache:
         await self._do_redis_ping()
 
         if self._is_using_redis:
-            await self.redis_conn.set(key)
+            await self.redis_conn.set(key, value)
         else:
             self._cache_fallback[key] = str(value).encode(encoding)
 
