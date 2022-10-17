@@ -46,7 +46,7 @@ async def download_file(link: str, path: str) -> None:
 
 async def download_media(
     link: str,
-    path: str = None,
+    path: Optional[str] = None,
     _format: str = "worstaudio/worst",
     download: bool = True
 ) -> Optional[dict]:
