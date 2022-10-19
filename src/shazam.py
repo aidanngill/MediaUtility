@@ -67,6 +67,7 @@ async def download_media(
 async def find_song(
     link: str,
     timestamp: Optional[int] = None,
+    duration: int = 15,
     use_cache: bool = True,
 ) -> Optional[song.Song]:
     """ Try to find a song given a URL and timestamp. """
@@ -103,7 +104,7 @@ async def find_song(
 
         def _download_media():
             ffmpeg \
-                .input(data_media["url"] if data_media else link, ss=(str(timestamp)), t=15) \
+                .input(data_media["url"] if data_media else link, ss=(str(timestamp)), t=duration) \
                 .output(file_path_audio, vn=None) \
                 .run(quiet=True)
         

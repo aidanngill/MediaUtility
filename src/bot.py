@@ -4,6 +4,7 @@ import os
 import discord
 from discord import app_commands
 
+from .commands.convert import convert
 from .commands.extract import extract
 from .commands.shazam import shazam_group
 
@@ -39,6 +40,7 @@ bot = Client(intents=intents)
 
 bot.tree.add_command(shazam_group)
 bot.tree.add_command(extract)
+bot.tree.add_command(convert)
 
 @bot.event
 async def on_ready():
