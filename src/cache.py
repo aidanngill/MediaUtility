@@ -10,6 +10,7 @@ from .api import song
 
 log = logging.getLogger(__name__)
 
+
 class Cache:
     def __init__(self, redis_host: str = "redis://localhost"):
         self.redis_host = redis_host
@@ -30,7 +31,9 @@ class Cache:
                 log.info("Successfully connected to the Redis host")
             except ConnectionError:
                 self._is_using_redis = False
-                log.warning("Failed to connect to the Redis host, using fallback cache system")
+                log.warning(
+                    "Failed to connect to the Redis host, using fallback cache system"
+                )
 
             self._have_pinged = True
 
@@ -50,7 +53,9 @@ class Cache:
         else:
             self._cache_fallback[key] = str(value).encode(encoding)
 
+
 _cache = Cache(os.getenv("REDIS_HOST", "redis://localhost"))
+
 
 async def set_empty_from_info(media_info: dict, scan_start: int = 0) -> None:
     """
@@ -64,6 +69,7 @@ async def set_empty_from_info(media_info: dict, scan_start: int = 0) -> None:
 
     await _cache.set(key_string, "{}")
 
+
 async def set_from_info(media_info: dict, song_info: dict, scan_start: int = 0) -> None:
     """
     Add any identified song to the Redis cache.
@@ -76,9 +82,10 @@ async def set_from_info(media_info: dict, song_info: dict, scan_start: int = 0) 
     key_string = "-".join(key_format)
 
     value_data = song.create(song_info)
-    value_encoded = json.dumps(value_data, separators=(',', ':'))
+    value_encoded = json.dumps(value_data, separators=(",", ":"))
 
     await _cache.set(key_string, value_encoded)
+
 
 async def get_from_info(media_info: dict, scan_start: int = 0) -> Optional[song.Song]:
     """

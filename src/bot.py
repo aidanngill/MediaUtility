@@ -16,11 +16,12 @@ GUILDS_SYNC = [
     if g != ""
 ]
 
+
 class Client(discord.Client):
     def __init__(self, *, intents: discord.Intents):
         super().__init__(intents=intents)
         self.tree = app_commands.CommandTree(self)
-    
+
     async def setup_hook(self):
         mode = os.getenv("CMD_MODE", "dev")
 
@@ -35,12 +36,14 @@ class Client(discord.Client):
         else:
             await self.tree.sync()
 
+
 intents = discord.Intents.default()
 bot = Client(intents=intents)
 
 bot.tree.add_command(shazam_group)
 bot.tree.add_command(extract)
 bot.tree.add_command(convert)
+
 
 @bot.event
 async def on_ready():

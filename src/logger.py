@@ -9,6 +9,7 @@ from logging.handlers import TimedRotatingFileHandler
 def namer(name):
     return name + ".gz"
 
+
 def rotator(source, dest):
     with open(source, "rb") as sf:
         data = sf.read()
@@ -16,6 +17,7 @@ def rotator(source, dest):
         with open(dest, "wb") as df:
             df.write(compressed)
     os.remove(source)
+
 
 # https://gist.github.com/vernomcrp/18069053fb3cf3807c9e8601eb8016d5
 class TimezoneFormatter(logging.Formatter):
@@ -29,6 +31,7 @@ class TimezoneFormatter(logging.Formatter):
             t = time.strftime("%Y-%m-%d %H:%M:%S", ct)
             s = "%s,%03d" % (t, record.msecs)
         return s
+
 
 # Logging to the console as a stream.
 stream_formatter = logging.Formatter(
@@ -60,6 +63,7 @@ file_handler.namer = namer
 
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(file_formatter)
+
 
 def setup_logging():
     os.makedirs("./logs", exist_ok=True)
