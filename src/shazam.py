@@ -33,17 +33,19 @@ async def download_file(link: str, path: str) -> None:
 async def download_media(
     link: str,
     path: Optional[str] = None,
-    _format: str = "worstaudio/worst",
+    fmt: Optional[str] = None,
     download: bool = True,
 ) -> Optional[dict]:
     """Downloads a given piece of media to a path. If no YoutubeDL information
     is found, it is downloaded directly instead."""
     loop = asyncio.get_event_loop()
     opts = {
-        "format": _format,
         "quiet": True,
         "outtmpl": path,
     }
+
+    if fmt:
+        opts["format"] = fmt
 
     with YoutubeDL(opts) as dl:
         return await loop.run_in_executor(
@@ -65,7 +67,7 @@ async def find_song(
 
     with TemporaryDirectory() as path_temp:
         # Download the file to the temporary path.
-        data_media = await download_media(link, download=False)
+        data_media = await download_media(link, fmt="worstaudio/worst", download=False)
 
         # Some extractors have a `&t=` query parameter to denote the timestamp.
         # If we're not provided an explicit timestamp, try to get it from here
