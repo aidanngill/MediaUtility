@@ -10,7 +10,14 @@ second_multiplier = [
 
 
 def timestamp_to_seconds(timestamp: str) -> int:
-    """Try to convert a timestamp string (e.g., 3:45) to seconds."""
+    """Try to convert a timestamp string (e.g., 3:45) to seconds.
+
+    Args:
+        timestamp (str): The string we should try to determine a timestamp from.
+
+    Returns:
+        The time in seconds.
+    """
     split = timestamp.split(":")
     split.reverse()
 
@@ -25,7 +32,18 @@ def timestamp_to_seconds(timestamp: str) -> int:
 
 
 def timestamp_from_extractor(link: str, extractor_key: str) -> Optional[int]:
-    """Try to resolve the timestamp from a link and its extractor."""
+    """Try to resolve the timestamp from a link and its extractor.
+
+    Args:
+        link (str): The provided URL string to find timestamps from.
+        extractor_key (str): Which social media we will be extracting the timestamp
+            from. Each one may have different methods for storing timestamps in their
+            URLs, and so we must differentiate between them to be as accurate as
+            possible.
+
+    Returns:
+        The timestamp in seconds, or None.
+    """
     url_parsed = parse.urlparse(link)
 
     # For Youtube links the timestamp will be stored in the `?t=` query parameter.

@@ -5,7 +5,15 @@ import ffmpeg
 
 
 def video_to_gif(input_path: PathLike, output_path: PathLike) -> None:
-    """Tries to convert a given video to a GIF and compresses it."""
+    """Tries to convert a given video to a GIF and compresses it.
+
+    Args:
+        input_path (os.PathLike): Media we should use as an input.
+        output_path (os.PathLike): Where to save the output media to.
+
+    Returns:
+        None.
+    """
 
     # 360px width, automatically configure height, and cap to 15 FPS.
     split = (
@@ -33,6 +41,13 @@ def video(input_path: PathLike, output_path: PathLike) -> None:
 
     For instance, converting `input.mp4` to `output.webm` would convert the
     MP4 video into a WebM video.
+
+    Args:
+        input_path (os.PathLike): Media we should use as an input.
+        output_path (os.PathLike): Where to save the output media to.
+
+    Returns:
+        None.
     """
     _, extension = os.path.splitext(output_path)
 

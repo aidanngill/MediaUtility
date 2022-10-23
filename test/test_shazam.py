@@ -60,7 +60,7 @@ class ShazamTest(unittest.IsolatedAsyncioTestCase):
             timestamp that should return a different song. """
         song = await shazam.find_song(
             "https://soundcloud.com/euphorichardstylez/euphoricast-59-june-2022?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing#t=1%3A16%3A48",
-            timestamp=887,
+            time_start=887,
             use_cache=False,
         )
 

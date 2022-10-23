@@ -6,6 +6,6 @@ from .logger import setup_logging
 setup_logging()
 
 token = os.getenv("BOT_TOKEN")
-assert token != None
+assert token is not None
 
 bot.run(token, log_handler=None)

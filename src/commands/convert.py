@@ -40,14 +40,14 @@ async def convert(
         file_in = os.path.join(path_temp, input_media.filename)
         file_out = os.path.join(path_temp, f"bawt.{new_format.value}")
 
-        await shazam.download_file(input_media.url, file_in)
+        await shazam.download_media(input_media.url, file_in)
 
         await loop.run_in_executor(None, lambda: conversion.video(file_in, file_out))
 
         try:
-            attachments = [discord.File(file_out)]
-
-            await interaction.edit_original_response(attachments=attachments)
+            await interaction.edit_original_response(
+                attachments=[discord.File(file_out)]
+            )
         except discord.HTTPException as e:
             if e.status == 413:
                 await interaction.edit_original_response(

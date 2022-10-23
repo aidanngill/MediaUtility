@@ -9,14 +9,14 @@ from .base import cmd_shazam
 @app_commands.command(
     name="file", description="Try to find a song from the attachment."
 )
-@app_commands.rename(input_media="input")
+@app_commands.rename(input_media="input", time_start="time")
 @app_commands.describe(
     input_media="where to find the video/audio from.",
-    timestamp="which timestamp to search from.",
+    time_start="which timestamp to search from.",
 )
 async def cmd_shazam_file(
     interaction: discord.Interaction,
     input_media: discord.Attachment,
-    timestamp: Optional[int] = None,
+    time_start: Optional[int] = None,
 ):
-    return await cmd_shazam(interaction, input_media.url, timestamp)
+    return await cmd_shazam(interaction, input_media.url, time_start)

@@ -12,19 +12,19 @@ from ..exceptions import InvalidLinkException
 @app_commands.command(
     name="extract", description="Extract the media link from the given post."
 )
-@app_commands.rename(input_media="input", playlist_item="index")
+@app_commands.rename(input_media="input", playlist_index="index")
 @app_commands.describe(
     input_media="where to find the video/audio from.",
-    playlist_item="which index to download from a playlist.",
+    playlist_index="which index to download from a playlist.",
 )
 async def extract(
-    interaction: discord.Interaction, input_media: str, playlist_item: int = 1
+    interaction: discord.Interaction, input_media: str, playlist_index: int = 1
 ):
     await interaction.response.defer(thinking=True)
 
     try:
         data: Optional[dict] = await shazam.download_media(
-            input_media, index=playlist_item, download=False
+            input_media, playlist_index=playlist_index, should_download=False
         )
     except InvalidLinkException:
         return await interaction.edit_original_response(
@@ -50,14 +50,34 @@ async def extract(
         # when this context manager exits. Doesn't affect anything, just means that
         # temporary stuff won't be deleted. Still annoying.
         with TemporaryDirectory() as path_temp:
-            file_name = f"{data['extractor']} - {data['id']}.{data.get('ext', 'mp4')}"
-            file_path = os.path.join(path_temp, file_name)
+            file_path = os.path.join(
+                path_temp,
+                "{0} - {1}.{2}".format(
+                    data["extractor"], data["id"], data.get("ext", "mp4")
+                ),
+            )
 
-            await shazam.download_media(input_media, file_path)
+            # TODO: Issue with (at least) Instagram where there are mixed video/image
+            # slides. E.g., if a picture is first, and a video is second, the desired
+            # command is `/extract <link> 2`, but instead only the videos are detected
+            # and you will end up having to type `1` as the index.
+            await shazam.download_media(
+                input_media,
+                output_path=file_path,
+                playlist_index=playlist_index,
+                should_download=True,
+            )
 
-            attachments = [discord.File(file_path)]
-
-            await interaction.edit_original_response(attachments=attachments)
+            # Validate that the file was downloaded successfully.
+            if os.path.exists(file_path):
+                await interaction.edit_original_response(
+                    attachments=[discord.File(file_path)]
+                )
+            else:
+                await interaction.edit_original_response(
+                    content="Sorry, I couldn't download the requested media right now. "
+                    "Maybe try again later."
+                )
 
     # Send the raw URL otherwise.
     else:

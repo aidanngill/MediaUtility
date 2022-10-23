@@ -6,7 +6,7 @@ from .link import cmd_shazam_link
 
 class ShazamGroup(app_commands.Group):
     def __init__(self):
-        super().__init__(name="shazam", description="find songs from media.")
+        super().__init__(name="shazam", description="Find songs from media.")
 
 
 shazam_group = ShazamGroup()

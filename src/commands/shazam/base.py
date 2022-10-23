@@ -7,12 +7,17 @@ from ...exceptions import InvalidLinkException
 
 
 async def cmd_shazam(
-    interaction: discord.Interaction, input_link: str, timestamp: Optional[int] = None
+    interaction: discord.Interaction,
+    input_link: str,
+    time_start: Optional[int] = None,
+    playlist_index: int = 1,
 ):
     await interaction.response.defer(thinking=True)
 
     try:
-        song = await shazam.find_song(input_link, timestamp)
+        song = await shazam.find_song(
+            input_link, time_start, playlist_index=playlist_index
+        )
     except InvalidLinkException:
         return await interaction.edit_original_response(
             content="Please provide a valid link."

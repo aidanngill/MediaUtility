@@ -61,8 +61,12 @@ async def set_empty_from_info(media_info: dict, scan_start: int = 0) -> None:
     """
     Add any unidentified song to the Redis cache.
 
-    :param dict media_info: Data we get from `YoutubeDL.extract_info`.
-    :param int scan_start: Timestamp (in seconds) at which the audio was scanned from.
+    Args:
+        media_info (dict): Data we get from `YoutubeDL.extract_info`.
+        scan_start (int): Timestamp (in seconds) at which the audio was scanned from.
+
+    Returns:
+        None.
     """
     key_format = [media_info["extractor"], media_info["id"], str(scan_start)]
     key_string = "-".join(key_format)
@@ -74,9 +78,13 @@ async def set_from_info(media_info: dict, song_info: dict, scan_start: int = 0) 
     """
     Add any identified song to the Redis cache.
 
-    :param dict media_info: Data we get from `YoutubeDL.extract_info`.
-    :param dict song_info: Data we get from `Shazam.recognize_song`.
-    :param int scan_start: Timestamp (in seconds) at which the audio was scanned from.
+    Args:
+        media_info (dict): Data we get from `YoutubeDL.extract_info`.
+        song_info (dict): Data we get from `Shazam.recognize_song`.
+        scan_start (int): Timestamp (in seconds) at which the audio was scanned from.
+
+    Returns:
+        None.
     """
     key_format = [media_info["extractor"], media_info["id"], str(scan_start)]
     key_string = "-".join(key_format)
@@ -91,11 +99,12 @@ async def get_from_info(media_info: dict, scan_start: int = 0) -> Optional[song.
     """
     Get any identified song from the Redis cache.
 
-    :param dict media_info: Data we get from `YoutubeDL.extract_info`.
-    :param int scan_start: Timestamp (in seconds) at which the audio was scanned from.
+    Args:
+        media_info (dict): Data we get from `YoutubeDL.extract_info`.
+        scan_start (int): Timestamp (in seconds) at which the audio was scanned from.
 
-    :rtype: str | None
-    :return: Any identified songs, or nothing.
+    Returns:
+        Any identified songs, or none.
     """
     key_format = [media_info["extractor"], media_info["id"], str(scan_start)]
     key_string = "-".join(key_format)
