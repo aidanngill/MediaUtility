@@ -34,15 +34,13 @@ async def download_media(
     link: str,
     path: Optional[str] = None,
     fmt: Optional[str] = None,
+    index: Optional[int] = 1,
     download: bool = True,
 ) -> Optional[dict]:
     """Downloads a given piece of media to a path. If no YoutubeDL information
     is found, it is downloaded directly instead."""
     loop = asyncio.get_event_loop()
-    opts = {
-        "quiet": True,
-        "outtmpl": path,
-    }
+    opts = {"quiet": True, "outtmpl": path, "playlist_items": str(index)}
 
     if fmt:
         opts["format"] = fmt

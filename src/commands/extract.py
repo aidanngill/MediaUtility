@@ -12,13 +12,20 @@ from ..exceptions import InvalidLinkException
 @app_commands.command(
     name="extract", description="Extract the media link from the given post."
 )
-@app_commands.rename(input_media="input")
-@app_commands.describe(input_media="where to find the video/audio from.")
-async def extract(interaction: discord.Interaction, input_media: str):
+@app_commands.rename(input_media="input", playlist_item="index")
+@app_commands.describe(
+    input_media="where to find the video/audio from.",
+    playlist_item="which index to download from a playlist.",
+)
+async def extract(
+    interaction: discord.Interaction, input_media: str, playlist_item: int = 1
+):
     await interaction.response.defer(thinking=True)
 
     try:
-        data: Optional[dict] = await shazam.download_media(input_media, download=False)
+        data: Optional[dict] = await shazam.download_media(
+            input_media, index=playlist_item, download=False
+        )
     except InvalidLinkException:
         return await interaction.edit_original_response(
             content="Please provide a valid link."
@@ -48,9 +55,7 @@ async def extract(interaction: discord.Interaction, input_media: str):
 
             await shazam.download_media(input_media, file_path)
 
-            attachments = [
-                discord.File(file_path)
-            ]
+            attachments = [discord.File(file_path)]
 
             await interaction.edit_original_response(attachments=attachments)
 
