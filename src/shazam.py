@@ -129,7 +129,7 @@ async def find_song(
         # If we're not provided an explicit timestamp, try to get it from here
         # instead.
         if data_media and time_start is None:
-            time_start = timestamp_from_extractor(link, data_media["extractor"])
+            time_start = timestamp_from_extractor(link, data_media["extractor_key"])
 
         # Fallback value if we don't find anything from the extractor.
         if time_start is None:

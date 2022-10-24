@@ -68,7 +68,7 @@ async def set_empty_from_info(media_info: dict, scan_start: int = 0) -> None:
     Returns:
         None.
     """
-    key_format = [media_info["extractor"], media_info["id"], str(scan_start)]
+    key_format = [media_info["extractor_key"], media_info["id"], str(scan_start)]
     key_string = "-".join(key_format)
 
     await _cache.set(key_string, "{}")
@@ -86,7 +86,7 @@ async def set_from_info(media_info: dict, song_info: dict, scan_start: int = 0) 
     Returns:
         None.
     """
-    key_format = [media_info["extractor"], media_info["id"], str(scan_start)]
+    key_format = [media_info["extractor_key"], media_info["id"], str(scan_start)]
     key_string = "-".join(key_format)
 
     value_data = song.create(song_info)
@@ -106,7 +106,7 @@ async def get_from_info(media_info: dict, scan_start: int = 0) -> Optional[song.
     Returns:
         Any identified songs, or none.
     """
-    key_format = [media_info["extractor"], media_info["id"], str(scan_start)]
+    key_format = [media_info["extractor_key"], media_info["id"], str(scan_start)]
     key_string = "-".join(key_format)
 
     data = await _cache.get(key_string)

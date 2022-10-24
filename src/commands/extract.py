@@ -36,7 +36,11 @@ async def extract(
             content="Sorry, I couldn't find any media."
         )
 
-    extractor: str = data.get("extractor", "").lower()
+    extractor: str = data.get("extractor_key", "").lower()
+
+    # If the file size is less than 8MB (max upload limit), then just download the video
+    # by ourselves.
+    file_size: Optional[int] = data.get("filesize_approx")
 
     # If we have a Reddit, Instagram, or TikTok video, download it ourself and send it
     # as an attachment.
@@ -45,7 +49,9 @@ async def extract(
     # - Instagram and Tiktok have slow CDNs and usually lower quality/shorter
     #   videos, so quickly downloading them and re-uploading is worth it for
     #   Discord's comparatively quick CDN.
-    if extractor in ("reddit", "instagram", "tiktok"):
+    if extractor in ("reddit", "instagram", "tiktok") or (
+        file_size and file_size < 8e6
+    ):
         # TODO: Windows spits out an error about the file being used by another program
         # when this context manager exits. Doesn't affect anything, just means that
         # temporary stuff won't be deleted. Still annoying.
@@ -53,7 +59,7 @@ async def extract(
             file_path = os.path.join(
                 path_temp,
                 "{0} - {1}.{2}".format(
-                    data["extractor"], data["id"], data.get("ext", "mp4")
+                    data["extractor_key"], data["id"], data.get("ext", "mp4")
                 ),
             )
 
