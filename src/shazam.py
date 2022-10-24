@@ -76,9 +76,14 @@ async def download_media(
         opts["format"] = file_format
 
     with YoutubeDL(opts) as dl:
-        return await loop.run_in_executor(
+        data = await loop.run_in_executor(
             None, lambda: dl.extract_info(link, download=should_download)
         )
+
+        if data.get("entries"):
+            return data["entries"][0]
+
+        return data
 
 
 async def find_song(
