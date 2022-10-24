@@ -42,8 +42,8 @@ async def download_media(
     link: str,
     output_path: Optional[str] = None,
     file_format: Optional[str] = None,
-    playlist_index: Optional[int] = 1,
-    should_download: Optional[bool] = True,
+    playlist_index: int = 1,
+    should_download: bool = True,
 ) -> Optional[dict]:
     """Downloads a given piece of media to a path. If no YoutubeDL information is found,
         it is downloaded directly instead.
@@ -79,6 +79,9 @@ async def download_media(
         data = await loop.run_in_executor(
             None, lambda: dl.extract_info(link, download=should_download)
         )
+
+        if data is None:
+            return
 
         if data.get("entries"):
             return data["entries"][0]
@@ -133,7 +136,7 @@ async def find_song(
             time_start = 0
 
         # Check for existing cache in Redis.
-        if use_cache:
+        if data_media and use_cache:
             maybe_song = await cache.get_from_info(data_media, time_start)
 
             if maybe_song is not None:
@@ -155,7 +158,7 @@ async def find_song(
 
         data_shazam = await _shazam.recognize_song(file_path_audio)
 
-        if use_cache and len(data_shazam["matches"]) == 0:
+        if data_media and use_cache and len(data_shazam["matches"]) == 0:
             await cache.set_empty_from_info(data_media, time_start)
             return
 

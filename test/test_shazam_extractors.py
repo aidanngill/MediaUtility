@@ -4,7 +4,7 @@ from src import shazam
 
 
 class ShazamExtractorsTest(unittest.TestCase):
-    def test_extractor_timestamp_youtube_long(self):
+    def test_youtube_long(self):
         self.assertEqual(
             shazam.timestamp_from_extractor(
                 "https://www.youtube.com/watch?v=y6120QOlsfU&t=120", "youtube"
@@ -12,7 +12,7 @@ class ShazamExtractorsTest(unittest.TestCase):
             120,
         )
 
-    def test_extractor_timestamp_youtube_short(self):
+    def test_youtube_short(self):
         self.assertEqual(
             shazam.timestamp_from_extractor(
                 "https://youtu.be/y6120QOlsfU?t=90", "youtube"
@@ -20,7 +20,7 @@ class ShazamExtractorsTest(unittest.TestCase):
             90,
         )
 
-    def test_extractor_timestamp_soundcloud(self):
+    def test_soundcloud(self):
         self.assertEqual(
             shazam.timestamp_from_extractor(
                 "https://soundcloud.com/euphorichardstylez/euphoricast-59-june-2022"

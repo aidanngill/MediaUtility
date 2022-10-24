@@ -1,15 +1,14 @@
 import os
-from os import PathLike
 
 import ffmpeg
 
 
-def video_to_gif(input_path: PathLike, output_path: PathLike) -> None:
+def video_to_gif(input_path: str, output_path: str) -> None:
     """Tries to convert a given video to a GIF and compresses it.
 
     Args:
-        input_path (os.PathLike): Media we should use as an input.
-        output_path (os.PathLike): Where to save the output media to.
+        input_path (str): Path to the media we should use as an input.
+        output_path (str): Path to save the output media to.
 
     Returns:
         None.
@@ -35,7 +34,7 @@ def video_to_gif(input_path: PathLike, output_path: PathLike) -> None:
     )
 
 
-def video(input_path: PathLike, output_path: PathLike) -> None:
+def video(input_path: str, output_path: str) -> None:
     """Tries to convert the input video into the format specified by the
     extension of the output path.
 
@@ -43,8 +42,8 @@ def video(input_path: PathLike, output_path: PathLike) -> None:
     MP4 video into a WebM video.
 
     Args:
-        input_path (os.PathLike): Media we should use as an input.
-        output_path (os.PathLike): Where to save the output media to.
+        input_path (str): Path to the media we should use as an input.
+        output_path (str): Path to save the output media to.
 
     Returns:
         None.

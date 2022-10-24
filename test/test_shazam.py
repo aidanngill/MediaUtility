@@ -6,7 +6,7 @@ from src.exceptions import InvalidLinkException
 
 class ShazamTest(unittest.IsolatedAsyncioTestCase):
     async def test_song_invalid_url(self):
-        """Song link is not a valid link and should fail with an InvalidLinkException."""
+        """The link provided is not a valid URI, and should throw an exception."""
 
         async def _test_song_find_invalid():
             try:
@@ -18,13 +18,14 @@ class ShazamTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(await _test_song_find_invalid())
 
     async def test_song_exists(self):
-        """Song link is valid, and links to Darude's song "Sandstorm"."""
+        """Song link is valid."""
         song = await shazam.find_song(
             "https://www.youtube.com/watch?v=y6120QOlsfU",
             use_cache=False,
         )
 
         self.assertIsNotNone(song)
+        assert song is not None
 
         self.assertEqual(song["artist"], "Darude")
         self.assertEqual(song["title"], "Sandstorm")
@@ -42,7 +43,7 @@ class ShazamTest(unittest.IsolatedAsyncioTestCase):
     async def test_song_timestamp_url(self):
         """Song is valid, it is a mix and so multiple songs exist. Within the link there
         is a timestamp string. No explicit timestamp is given, and so the function gets
-        the song at the link's timestamp, which is Avi8's song "All I Need"."""
+        the song at the link's timestamp."""
         song = await shazam.find_song(
             "https://soundcloud.com/euphorichardstylez/euphoricast-59-june-2022"
             "?utm_source=clipboard"
@@ -52,6 +53,7 @@ class ShazamTest(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertIsNotNone(song)
+        assert song is not None
 
         self.assertEqual(song["artist"], "Avi8")
         self.assertEqual(song["title"], "All I Need")
@@ -70,20 +72,26 @@ class ShazamTest(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertIsNotNone(song)
+        assert song is not None
 
         self.assertEqual(song["artist"], "Chaoz & Seconds From Space")
         self.assertEqual(song["title"], "Runaway (Extended)")
         self.assertEqual(song["album"], "Runaway - Single")
 
     async def test_song_playlist_index(self):
-        """Test finding a song from an item deeper into a playlist."""
-        song = await shazam.find_song(
+        """Find two different songs from two different items in a playlist, with the
+        same URL."""
+        song_one = await shazam.find_song(
             "https://www.youtube.com/watch?v=QBpF0NTUTnA&list=PL496CFE0819E797DE",
-            playlist_index=5,
+            playlist_index=1,
         )
 
-        self.assertIsNotNone(song)
+        song_two = await shazam.find_song(
+            "https://www.youtube.com/watch?v=QBpF0NTUTnA&list=PL496CFE0819E797DE",
+            playlist_index=2,
+        )
 
-        self.assertEqual(song["artist"], "Dead or Alive")
-        self.assertEqual(song["title"], "Brand New Lover")
-        self.assertEqual(song["album"], "'Mad, Bad and Dangerous to Know")
+        self.assertIsNotNone(song_one)
+        self.assertIsNotNone(song_two)
+
+        self.assertNotEqual(song_one, song_two)

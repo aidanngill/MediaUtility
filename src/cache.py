@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from redis import asyncio as aioredis
 from redis.exceptions import ConnectionError
@@ -20,7 +20,7 @@ class Cache:
         self._is_using_redis: bool = True
 
         # Cache to use if we cannot make a connection to Redis.
-        self._cache_fallback: Dict[str, any] = {}
+        self._cache_fallback: Dict[str, bytes] = {}
 
     async def _do_redis_ping(self) -> None:
         if not self._have_pinged:
@@ -37,7 +37,7 @@ class Cache:
 
             self._have_pinged = True
 
-    async def get(self, key: str) -> Optional[any]:
+    async def get(self, key: str) -> Optional[bytes]:
         await self._do_redis_ping()
 
         if self._is_using_redis:
@@ -45,7 +45,7 @@ class Cache:
         else:
             return self._cache_fallback.get(key)
 
-    async def set(self, key: str, value: any, encoding: str = "utf-8") -> None:
+    async def set(self, key: str, value: Any, encoding: str = "utf-8") -> None:
         await self._do_redis_ping()
 
         if self._is_using_redis:
@@ -109,7 +109,7 @@ async def get_from_info(media_info: dict, scan_start: int = 0) -> Optional[song.
     key_format = [media_info["extractor"], media_info["id"], str(scan_start)]
     key_string = "-".join(key_format)
 
-    data: bytes = await _cache.get(key_string)
+    data = await _cache.get(key_string)
 
     if data is None:
         return

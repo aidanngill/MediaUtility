@@ -11,7 +11,14 @@ class Song(TypedDict):
 
 
 def create(data: dict) -> Optional[Song]:
-    """Takes input data from the Shazam API and tries to turn it into a song."""
+    """Takes input data from the Shazam API and tries to turn it into a song.
+
+    Args:
+        data (dict): Song data from Shazam's API.
+
+    Returns:
+        Formatted song data, or None.
+    """
     if not data.get("track"):
         return
 
