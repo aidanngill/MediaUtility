@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "media-utility-bot"
-version = "0.1.0"
+version = "0.1.1"
 description = "Discord bot to automate media manipulation capabilities."
 authors = ["Aidan Gill <79653940+aidanngill@users.noreply.github.com>"]
 readme = "README.md"

@@ -119,7 +119,7 @@ async def find_song(
 
     loop = asyncio.get_event_loop()
 
-    with TemporaryDirectory(delete=False) as path_temp:
+    with TemporaryDirectory() as path_temp:
         # Download the file to the temporary path.
         data_media = await download_media(
             link,
