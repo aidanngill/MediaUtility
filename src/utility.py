@@ -46,13 +46,16 @@ def timestamp_from_extractor(link: str, extractor_key: str) -> Optional[int]:
     """
     url_parsed = parse.urlparse(link)
 
-    # For Youtube links the timestamp will be stored in the `?t=` query parameter.
-    if extractor_key == "youtube":
-        url_query_ts = parse.parse_qs(url_parsed.query).get("t")
+    match extractor_key.lower():
+        # For Youtube links the timestamp will be stored in the `?t=` query parameter.
+        # Update: They now have an "s" at the end.
+        case "youtube":
+            url_query_ts = parse.parse_qs(url_parsed.query).get("t")
 
-        if url_query_ts is not None:
-            return int(url_query_ts[0])
-
-    # For Soundcloud links they have a URL fragment, e.g., `t=1%3A32` = `t=1:32`.
-    elif extractor_key == "soundcloud":
-        return timestamp_to_seconds(parse.unquote(url_parsed.fragment.split("=")[-1]))
+            if url_query_ts is not None:
+                return int(url_query_ts[0].strip("s"))
+        # For Soundcloud links they have a URL fragment, e.g., `t=1%3A32` = `t=1:32`.
+        case "soundcloud":
+            return timestamp_to_seconds(
+                parse.unquote(url_parsed.fragment.split("=")[-1])
+            )

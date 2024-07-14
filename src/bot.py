@@ -26,7 +26,7 @@ class Client(discord.Client):
         mode = os.getenv("CMD_MODE", "dev")
 
         if mode not in ("dev", "prod"):
-            mode = "dev"
+            raise TypeError("Invalid runtime mode was given.")
 
         if mode == "dev":
             for guild in GUILDS_SYNC:
@@ -35,15 +35,13 @@ class Client(discord.Client):
 
         else:
             await self.tree.sync()
-
-
+    
 intents = discord.Intents.default()
 bot = Client(intents=intents)
 
 bot.tree.add_command(shazam_group)
 bot.tree.add_command(extract)
 bot.tree.add_command(convert)
-
 
 @bot.event
 async def on_ready():

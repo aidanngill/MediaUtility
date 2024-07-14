@@ -1,13 +1,27 @@
-FROM python:bullseye
+FROM python:3.12.4-bullseye
+
+RUN pip install poetry==1.8.3
+
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
 WORKDIR /app
 
-RUN apt update -y && apt upgrade -y && apt install ffmpeg -y
+COPY pyproject.toml poetry.lock ./
 
-COPY requirements.txt .
+RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
-RUN pip install -r requirements.txt
+RUN apt update -y && \
+    apt upgrade -y && \
+    apt install ffmpeg -y --no-install-recommends && \
+    apt autoremove -y
 
-COPY . .
+ENV VIRTUAL_ENV=/app/.venv \
+    PATH="/app/.venv/bin:$PATH"
 
-CMD ["python3", "-m", "src"]
+WORKDIR /app
+COPY . /app/
+
+CMD python3 -m src

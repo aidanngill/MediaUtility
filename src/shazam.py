@@ -3,6 +3,7 @@ import mimetypes
 import os
 from tempfile import TemporaryDirectory
 from typing import Optional
+import logging
 
 import aiofiles
 import aiohttp
@@ -17,6 +18,8 @@ from .exceptions import InvalidLinkException
 from .utility import timestamp_from_extractor
 
 _shazam = Shazam()
+
+log = logging.getLogger(__name__)
 
 
 async def download_file(link: str, output_path: str) -> None:
@@ -116,7 +119,7 @@ async def find_song(
 
     loop = asyncio.get_event_loop()
 
-    with TemporaryDirectory() as path_temp:
+    with TemporaryDirectory(delete=False) as path_temp:
         # Download the file to the temporary path.
         data_media = await download_media(
             link,
@@ -145,18 +148,37 @@ async def find_song(
 
                 return maybe_song
 
-        file_path_audio = os.path.join(path_temp, "audio.ogg")
+        path_audio_input = os.path.join(path_temp, "input.ogg")
+        path_audio_output = os.path.join(path_temp, "output.ogg")
+
+        # Some services don't allow chunked downloads as required later by the
+        # `ss` argument of the `ffmpeg` command.
+        should_download = "tiktok" in link
+
+        if should_download:
+            await download_media(
+                link,
+                output_path=path_audio_input,
+                file_format="worstaudio/worst",
+                playlist_index=playlist_index,
+            )
+        else:
+            path_audio_input = data_media["url"] if data_media else link
 
         def _download_media():
-            ffmpeg.input(
-                data_media["url"] if data_media else link,
+            cmd = ffmpeg.input(
+                filename=path_audio_input,
                 ss=(str(time_start)),
                 t=time_duration,
-            ).output(file_path_audio, vn=None).run(quiet=True)
+            ).output(path_audio_output, vn=None)
+            
+            log.debug(" ".join(cmd.compile()))
+
+            cmd.run(quiet=True)
 
         await loop.run_in_executor(None, lambda: _download_media())
 
-        data_shazam = await _shazam.recognize_song(file_path_audio)
+        data_shazam = await _shazam.recognize(path_audio_output)
 
         if data_media and use_cache and len(data_shazam["matches"]) == 0:
             await cache.set_empty_from_info(data_media, time_start)
