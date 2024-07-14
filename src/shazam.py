@@ -8,14 +8,13 @@ import logging
 import aiofiles
 import aiohttp
 import ffmpeg
-import validators
 from shazamio import Shazam
 from yt_dlp import YoutubeDL
 
 from . import cache
 from .api import song
 from .exceptions import InvalidLinkException
-from .utility import timestamp_from_extractor
+from .utility import timestamp_from_extractor, uri_validator
 
 _shazam = Shazam()
 
@@ -114,7 +113,9 @@ async def find_song(
     Returns:
         Data about the song, or None.
     """
-    if not validators.url(link):  # type: ignore
+    log.info(f"Link: {link}")
+
+    if not uri_validator(link):
         raise InvalidLinkException
 
     loop = asyncio.get_event_loop()

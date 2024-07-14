@@ -1283,20 +1283,6 @@ socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
-name = "validators"
-version = "0.32.0"
-description = "Python Data Validation for Humans™"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "validators-0.32.0-py3-none-any.whl", hash = "sha256:e9ce1703afb0adf7724b0f98e4081d9d10e88fa5d37254d21e41f27774c020cd"},
-    {file = "validators-0.32.0.tar.gz", hash = "sha256:9ee6e6d7ac9292b9b755a3155d7c361d76bb2dce23def4f0627662da1e300676"},
-]
-
-[package.extras]
-crypto-eth-addresses = ["eth-hash[pycryptodome] (>=0.7.0)"]
-
-[[package]]
 name = "websockets"
 version = "12.0"
 description = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
@@ -1514,4 +1500,4 @@ test = ["pytest (>=8.1,<9.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "672f275a96f4e206ec38dcd88c4b24f1dd0837098686e4f6856d0c3e185c6ff7"
+content-hash = "45ed40283178d97dbb9dacf774741c29b96de4a653b556af3d2b6c335d8cbb4e"

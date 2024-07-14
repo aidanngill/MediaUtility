@@ -1,5 +1,6 @@
 from typing import Optional
 from urllib import parse
+from urllib.parse import urlparse
 
 second_multiplier = [
     1,  # seconds
@@ -59,3 +60,10 @@ def timestamp_from_extractor(link: str, extractor_key: str) -> Optional[int]:
             return timestamp_to_seconds(
                 parse.unquote(url_parsed.fragment.split("=")[-1])
             )
+
+def uri_validator(x):
+    try:
+        result = urlparse(x)
+        return all([result.scheme, result.netloc])
+    except AttributeError:
+        return False
